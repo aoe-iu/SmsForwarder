@@ -8,21 +8,19 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.idormy.sms.forwarder.BroadCastReceiver.RebootBroadcastReceiver;
 import com.idormy.sms.forwarder.utils.CacheUtil;
 import com.idormy.sms.forwarder.utils.Define;
 import com.idormy.sms.forwarder.utils.aUtil;
-import com.xuexiang.xupdate.easy.EasyUpdate;
-import com.xuexiang.xupdate.proxy.impl.DefaultUpdateChecker;
+
+import androidx.appcompat.app.AppCompatActivity;
+
 
 
 public class AboutActivity extends AppCompatActivity {
@@ -46,47 +44,12 @@ public class AboutActivity extends AppCompatActivity {
         SwitchHelpTip(switch_help_tip);
 
         final TextView version_now = (TextView) findViewById(R.id.version_now);
-        Button check_version_now = (Button) findViewById(R.id.check_version_now);
+//        Button check_version_now = (Button) findViewById(R.id.check_version_now);
         try {
             version_now.setText(aUtil.getVersionName(AboutActivity.this));
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        check_version_now.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //checkNewVersion();
-                try {
-                    String updateUrl = "https://xupdate.bms.ink/update/checkVersion?appKey=com.idormy.sms.forwarder&versionCode=";
-                    updateUrl += aUtil.getVersionCode(AboutActivity.this);
-
-                    EasyUpdate.create(AboutActivity.this, updateUrl)
-                            .updateChecker(new DefaultUpdateChecker() {
-                                @Override
-                                public void onBeforeCheck() {
-                                    super.onBeforeCheck();
-                                    Toast.makeText(AboutActivity.this, "查询中...", Toast.LENGTH_LONG).show();
-                                }
-
-                                @Override
-                                public void onAfterCheck() {
-                                    super.onAfterCheck();
-                                }
-
-                                @Override
-                                public void noNewVersion(Throwable throwable) {
-                                    super.noNewVersion(throwable);
-                                    // 没有最新版本的处理
-                                    Toast.makeText(AboutActivity.this, "已是最新版本！", Toast.LENGTH_LONG).show();
-                                }
-                            })
-                            .update();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
 
         final TextView cache_size = (TextView) findViewById(R.id.cache_size);
         try {
@@ -95,26 +58,20 @@ public class AboutActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         Button clear_all_cache = (Button) findViewById(R.id.clear_all_cache);
-        clear_all_cache.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CacheUtil.clearAllCache(AboutActivity.this);
-                try {
-                    cache_size.setText(CacheUtil.getTotalCacheSize(AboutActivity.this));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                Toast.makeText(AboutActivity.this, "缓存清理完成", Toast.LENGTH_LONG).show();
+        clear_all_cache.setOnClickListener(v -> {
+            CacheUtil.clearAllCache(AboutActivity.this);
+            try {
+                cache_size.setText(CacheUtil.getTotalCacheSize(AboutActivity.this));
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+            Toast.makeText(AboutActivity.this, "缓存清理完成", Toast.LENGTH_LONG).show();
         });
 
         Button join_qq_group = (Button) findViewById(R.id.join_qq_group);
-        join_qq_group.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String key = "HvroJRfvK7GGfnQgaIQ4Rh1un9O83N7M";
-                joinQQGroup(key);
-            }
+        join_qq_group.setOnClickListener(v -> {
+            String key = "HvroJRfvK7GGfnQgaIQ4Rh1un9O83N7M";
+            joinQQGroup(key);
         });
 
     }

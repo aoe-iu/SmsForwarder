@@ -17,9 +17,6 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.idormy.sms.forwarder.adapter.RuleAdapter;
 import com.idormy.sms.forwarder.model.RuleModel;
 import com.idormy.sms.forwarder.model.SenderModel;
@@ -28,11 +25,13 @@ import com.idormy.sms.forwarder.sender.SendUtil;
 import com.idormy.sms.forwarder.sender.SenderUtil;
 import com.idormy.sms.forwarder.utils.RuleUtil;
 import com.idormy.sms.forwarder.utils.SettingUtil;
-import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 
 import static com.idormy.sms.forwarder.SenderActivity.NOTIFY;
 
@@ -196,79 +195,70 @@ public class RuleActivity extends AppCompatActivity {
                 .setView(view1)
                 .create();
         final AlertDialog show = alertDialog71.show();
-        buttonruleok.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Object senderId = ruleSenderTv.getTag();
+        buttonruleok.setOnClickListener(view -> {
+            Object senderId = ruleSenderTv.getTag();
+            int radioGroupRuleCheckId = Math.max(radioGroupRuleCheck.getCheckedRadioButtonId(), radioGroupRuleCheck2.getCheckedRadioButtonId());
+            Log.d(TAG, "XXXX " + radioGroupRuleCheck.getCheckedRadioButtonId() + "  " + radioGroupRuleCheck2.getCheckedRadioButtonId() + " " + radioGroupRuleCheckId);
+            if (ruleModel == null) {
+                RuleModel newRuleModel = new RuleModel();
+                newRuleModel.setFiled(RuleModel.getRuleFiledFromCheckId(radioGroupRuleFiled.getCheckedRadioButtonId()));
+                newRuleModel.setCheck(RuleModel.getRuleCheckFromCheckId(radioGroupRuleCheckId));
+                newRuleModel.setSimSlot(RuleModel.getRuleSimSlotFromCheckId(radioGroupSimSlot.getCheckedRadioButtonId()));
+                newRuleModel.setValue(editTextRuleValue.getText().toString());
+                if (senderId != null) {
+                    newRuleModel.setSenderId(Long.valueOf(senderId.toString()));
+                }
+                RuleUtil.addRule(newRuleModel);
+                initRules();
+                adapter.add(ruleModels);
+            } else {
+                ruleModel.setFiled(RuleModel.getRuleFiledFromCheckId(radioGroupRuleFiled.getCheckedRadioButtonId()));
+                ruleModel.setCheck(RuleModel.getRuleCheckFromCheckId(radioGroupRuleCheckId));
+                ruleModel.setSimSlot(RuleModel.getRuleSimSlotFromCheckId(radioGroupSimSlot.getCheckedRadioButtonId()));
+                ruleModel.setValue(editTextRuleValue.getText().toString());
+                if (senderId != null) {
+                    ruleModel.setSenderId(Long.valueOf(senderId.toString()));
+                }
+                RuleUtil.updateRule(ruleModel);
+                initRules();
+                adapter.update(ruleModels);
+            }
+
+            show.dismiss();
+        });
+
+        buttonruledel.setOnClickListener(view -> {
+            if (ruleModel != null) {
+                RuleUtil.delRule(ruleModel.getId());
+                initRules();
+                adapter.del(ruleModels);
+            }
+            show.dismiss();
+        });
+
+        buttonruletest.setOnClickListener(view -> {
+            Object senderId = ruleSenderTv.getTag();
+            if (senderId == null) {
+                Toast.makeText(RuleActivity.this, "请先创建选择发送方", Toast.LENGTH_LONG).show();
+            } else {
                 int radioGroupRuleCheckId = Math.max(radioGroupRuleCheck.getCheckedRadioButtonId(), radioGroupRuleCheck2.getCheckedRadioButtonId());
-                Log.d(TAG, "XXXX " + radioGroupRuleCheck.getCheckedRadioButtonId() + "  " + radioGroupRuleCheck2.getCheckedRadioButtonId() + " " + radioGroupRuleCheckId);
                 if (ruleModel == null) {
                     RuleModel newRuleModel = new RuleModel();
                     newRuleModel.setFiled(RuleModel.getRuleFiledFromCheckId(radioGroupRuleFiled.getCheckedRadioButtonId()));
                     newRuleModel.setCheck(RuleModel.getRuleCheckFromCheckId(radioGroupRuleCheckId));
                     newRuleModel.setSimSlot(RuleModel.getRuleSimSlotFromCheckId(radioGroupSimSlot.getCheckedRadioButtonId()));
                     newRuleModel.setValue(editTextRuleValue.getText().toString());
-                    if (senderId != null) {
-                        newRuleModel.setSenderId(Long.valueOf(senderId.toString()));
-                    }
-                    RuleUtil.addRule(newRuleModel);
-                    initRules();
-                    adapter.add(ruleModels);
+                    newRuleModel.setSenderId(Long.valueOf(senderId.toString()));
+
+                    testRule(newRuleModel, Long.valueOf(senderId.toString()));
                 } else {
                     ruleModel.setFiled(RuleModel.getRuleFiledFromCheckId(radioGroupRuleFiled.getCheckedRadioButtonId()));
                     ruleModel.setCheck(RuleModel.getRuleCheckFromCheckId(radioGroupRuleCheckId));
                     ruleModel.setSimSlot(RuleModel.getRuleSimSlotFromCheckId(radioGroupSimSlot.getCheckedRadioButtonId()));
                     ruleModel.setValue(editTextRuleValue.getText().toString());
-                    if (senderId != null) {
-                        ruleModel.setSenderId(Long.valueOf(senderId.toString()));
-                    }
-                    RuleUtil.updateRule(ruleModel);
-                    initRules();
-                    adapter.update(ruleModels);
-                }
+                    ruleModel.setSenderId(Long.valueOf(senderId.toString()));
 
-                show.dismiss();
-            }
-        });
-
-        buttonruledel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (ruleModel != null) {
-                    RuleUtil.delRule(ruleModel.getId());
-                    initRules();
-                    adapter.del(ruleModels);
-                }
-                show.dismiss();
-            }
-        });
-
-        buttonruletest.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Object senderId = ruleSenderTv.getTag();
-                if (senderId == null) {
-                    Toast.makeText(RuleActivity.this, "请先创建选择发送方", Toast.LENGTH_LONG).show();
-                } else {
-                    int radioGroupRuleCheckId = Math.max(radioGroupRuleCheck.getCheckedRadioButtonId(), radioGroupRuleCheck2.getCheckedRadioButtonId());
-                    if (ruleModel == null) {
-                        RuleModel newRuleModel = new RuleModel();
-                        newRuleModel.setFiled(RuleModel.getRuleFiledFromCheckId(radioGroupRuleFiled.getCheckedRadioButtonId()));
-                        newRuleModel.setCheck(RuleModel.getRuleCheckFromCheckId(radioGroupRuleCheckId));
-                        newRuleModel.setSimSlot(RuleModel.getRuleSimSlotFromCheckId(radioGroupSimSlot.getCheckedRadioButtonId()));
-                        newRuleModel.setValue(editTextRuleValue.getText().toString());
-                        newRuleModel.setSenderId(Long.valueOf(senderId.toString()));
-
-                        testRule(newRuleModel, Long.valueOf(senderId.toString()));
-                    } else {
-                        ruleModel.setFiled(RuleModel.getRuleFiledFromCheckId(radioGroupRuleFiled.getCheckedRadioButtonId()));
-                        ruleModel.setCheck(RuleModel.getRuleCheckFromCheckId(radioGroupRuleCheckId));
-                        ruleModel.setSimSlot(RuleModel.getRuleSimSlotFromCheckId(radioGroupSimSlot.getCheckedRadioButtonId()));
-                        ruleModel.setValue(editTextRuleValue.getText().toString());
-                        ruleModel.setSenderId(Long.valueOf(senderId.toString()));
-
-                        testRule(ruleModel, Long.valueOf(senderId.toString()));
-                    }
+                    testRule(ruleModel, Long.valueOf(senderId.toString()));
                 }
             }
         });
@@ -430,18 +420,6 @@ public class RuleActivity extends AppCompatActivity {
     protected void onDestroy() {
         Log.d(TAG, "onDestroy");
         super.onDestroy();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        MobclickAgent.onResume(this);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        MobclickAgent.onPause(this);
     }
 
 }

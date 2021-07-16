@@ -56,6 +56,7 @@ public class SmsVo implements Serializable {
 
     public String getSmsVoForSend() {
         boolean switchAddExtra = SettingUtil.getSwitchAddExtra();
+        boolean switchAddDeviceName = SettingUtil.getSwitchAddDeviceName();
         boolean switchSmsTemplate = SettingUtil.getSwitchSmsTemplate();
         String smsTemplate = SettingUtil.getSmsTemplate().trim();
         String deviceMark = SettingUtil.getAddExtraDeviceMark().trim();
@@ -65,6 +66,10 @@ public class SmsVo implements Serializable {
 
         if (!switchAddExtra) {
             smsTemplate = smsTemplate.replace("{{卡槽信息}}\n", "").replace("{{卡槽信息}}", "");
+        }
+
+        if (!switchAddDeviceName) {
+            smsTemplate = smsTemplate.replace("\n{{设备名称}}", "").replace("{{设备名称}}", "");
         }
 
         return smsTemplate.replace("{{来源号码}}", mobile)

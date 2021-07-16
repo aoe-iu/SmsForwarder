@@ -10,9 +10,9 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.idormy.sms.forwarder.utils.SettingUtil;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 
 public class SettingActivity extends AppCompatActivity {
@@ -26,6 +26,12 @@ public class SettingActivity extends AppCompatActivity {
 
         Switch switch_add_extra = (Switch) findViewById(R.id.switch_add_extra);
         switchAddExtra(switch_add_extra);
+
+        Switch switch_add_device_name = (Switch) findViewById(R.id.switch_add_device_name);
+        switchAddDeviceName(switch_add_device_name);
+
+        Switch switch_enable_phone = (Switch) findViewById(R.id.switch_enable_phone);
+        switchEnablePhone(switch_enable_phone);
 
         EditText et_add_extra_device_mark = (EditText) findViewById(R.id.et_add_extra_device_mark);
         editAddExtraDeviceMark(et_add_extra_device_mark);
@@ -55,6 +61,23 @@ public class SettingActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void switchAddDeviceName(Switch switch_add_device_name) {
+        switch_add_device_name.setChecked(SettingUtil.getSwitchAddDeviceName());
+
+        switch_add_device_name.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            SettingUtil.switchAddDeviceName(isChecked);
+        });
+    }
+
+    private void switchEnablePhone(Switch switch_enable_phone) {
+        switch_enable_phone.setChecked(SettingUtil.getSwitchEnablePhone());
+
+        switch_enable_phone.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            SettingUtil.switchEnablePhone(isChecked);
+        });
+    }
+
 
     //设置转发附加信息devicemark
     private void editAddExtraDeviceMark(final EditText et_add_extra_device_mark) {
