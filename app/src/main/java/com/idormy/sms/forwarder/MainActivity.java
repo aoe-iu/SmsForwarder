@@ -14,7 +14,6 @@ import android.widget.Toast;
 
 import com.idormy.sms.forwarder.adapter.LogAdapter;
 import com.idormy.sms.forwarder.model.vo.LogVo;
-import com.idormy.sms.forwarder.utils.KeepAliveUtils;
 import com.idormy.sms.forwarder.utils.LogUtil;
 import com.idormy.sms.forwarder.utils.NetUtil;
 import com.idormy.sms.forwarder.utils.PhoneUtils;
@@ -54,7 +53,6 @@ public class MainActivity extends AppCompatActivity implements ReFlashListView.I
         //短信&网络组件初始化
         SmsUtil.init(this);
         NetUtil.init(this);
-        KeepAliveUtils.ignoreBatteryOptimization(MainActivity.this);
     }
 
     @Override

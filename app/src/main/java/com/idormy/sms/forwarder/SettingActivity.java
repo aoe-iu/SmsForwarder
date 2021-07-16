@@ -9,7 +9,9 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Switch;
+import android.widget.Toast;
 
+import com.idormy.sms.forwarder.utils.KeepAliveUtils;
 import com.idormy.sms.forwarder.utils.SettingUtil;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -53,12 +55,9 @@ public class SettingActivity extends AppCompatActivity {
     private void switchAddExtra(Switch switch_add_extra) {
         switch_add_extra.setChecked(SettingUtil.getSwitchAddExtra());
 
-        switch_add_extra.setOnCheckedChangeListener(new Switch.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                SettingUtil.switchAddExtra(isChecked);
-                Log.d(TAG, "onCheckedChanged:" + isChecked);
-            }
+        switch_add_extra.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            SettingUtil.switchAddExtra(isChecked);
+            Log.d(TAG, "onCheckedChanged:" + isChecked);
         });
     }
 
@@ -246,4 +245,11 @@ public class SettingActivity extends AppCompatActivity {
 
     }
 
+    public void batterySetting(View view) {
+        if (KeepAliveUtils.isIgnoreBatteryOptimization(this)) {
+            Toast.makeText(this,R.string.isIgnored,Toast.LENGTH_SHORT).show();
+        } else {
+            KeepAliveUtils.ignoreBatteryOptimization(this);
+        }
+    }
 }

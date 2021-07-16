@@ -24,4 +24,6 @@
     <string name="sender_tips">提示：新建发送方点击“添加”，长按删除/点击编辑已有</string>
     <string name="unknown_number">未知号码</string>
     <string name="calling">来电</string>
+    <string name="unsupport">您的手机不支持此设置</string>
+    <string name="isIgnored">已设置成功！</string>
 </resources>
