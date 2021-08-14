@@ -51,6 +51,10 @@ public class FrontService extends Service {
         Notification notification = builder.build();
         startForeground(1, notification);
 
+        //检查权限是否获取
+        //PackageManager pm = getPackageManager();
+        //PhoneUtils.CheckPermission(pm, this);
+
         //Android8.1以下尝试启动主界面，以便动态获取权限
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1) {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
