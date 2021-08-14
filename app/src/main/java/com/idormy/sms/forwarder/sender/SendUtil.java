@@ -50,10 +50,12 @@ public class SendUtil {
         LogUtil.init(context);
 
         String key = "SIM" + simId;
+        Log.i(TAG, "send_msg key:" + key);
         List<RuleModel> rulelist = RuleUtil.getRule(null, key);
         if (!rulelist.isEmpty()) {
             SenderUtil.init(context);
             for (RuleModel ruleModel : rulelist) {
+                Log.i(TAG, "send_msg ruleModel:" + ruleModel.toString());
                 //规则匹配发现需要发送
                 try {
                     if (ruleModel.checkMsg(smsVo)) {

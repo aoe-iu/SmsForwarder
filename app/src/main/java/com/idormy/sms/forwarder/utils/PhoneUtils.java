@@ -3,11 +3,8 @@ package com.idormy.sms.forwarder.utils;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
 import android.telephony.SubscriptionInfo;
@@ -15,10 +12,6 @@ import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 
 import java.io.File;
 import java.lang.reflect.Method;
@@ -28,6 +21,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 
 public class PhoneUtils {
     static Boolean hasInit = false;
@@ -293,27 +290,13 @@ public class PhoneUtils {
      */
     public static int getSimUsedCount() {
         int count = 0;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            try {
-                SubscriptionManager mSubscriptionManager = (SubscriptionManager) context.getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE);
-                if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-                    return count;
-                }
-                count = mSubscriptionManager.getActiveSubscriptionInfoCount();
-                return count;
-            } catch (Exception ignored) {
-            }
-        }
-
-        TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-        if (tm.getSimState() == TelephonyManager.SIM_STATE_READY) {
-            count = 1;
-        }
         try {
-            if (Integer.parseInt(getReflexMethodWithId(context, "getSimState", "1")) == TelephonyManager.SIM_STATE_READY) {
-                count = 2;
+            SubscriptionManager mSubscriptionManager = (SubscriptionManager) context.getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE);
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                return count;
             }
-        } catch (MethodNotFoundException ignored) {
+            return mSubscriptionManager.getActiveSubscriptionInfoCount();
+        } catch (Exception ignored) {
         }
         return count;
     }
@@ -325,66 +308,31 @@ public class PhoneUtils {
      */
     public static List<SimInfo> getSimMultiInfo() {
         List<SimInfo> infos = new ArrayList<>();
-        Log.d(TAG, "Build.VERSION.SDK_INT = " + Build.VERSION.SDK_INT);
-        Log.d(TAG, "Build.VERSION_CODES.LOLLIPOP_MR1 = " + Build.VERSION_CODES.LOLLIPOP_MR1);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            Log.d(TAG, "1.版本超过5.1，调用系统方法");
-            //1.版本超过5.1，调用系统方法
-            SubscriptionManager mSubscriptionManager = (SubscriptionManager) context.getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE);
-            List<SubscriptionInfo> activeSubscriptionInfoList = null;
-            if (mSubscriptionManager != null) {
+        //1.版本超过5.1，调用系统方法
+        SubscriptionManager mSubscriptionManager = (SubscriptionManager) context.getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE);
+        List<SubscriptionInfo> activeSubscriptionInfoList = null;
+        if (mSubscriptionManager != null) {
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
+                activeSubscriptionInfoList = mSubscriptionManager.getActiveSubscriptionInfoList();
+            }
+        }
+        if (activeSubscriptionInfoList != null && activeSubscriptionInfoList.size() > 0) {
+            //1.1.1 有使用的卡，就遍历所有卡
+            for (SubscriptionInfo subscriptionInfo : activeSubscriptionInfoList) {
+                SimInfo simInfo = new SimInfo();
+                simInfo.mCarrierName = subscriptionInfo.getCarrierName();
+                simInfo.mIccId = subscriptionInfo.getIccId();
+                simInfo.mSimSlotIndex = subscriptionInfo.getSimSlotIndex();
+                simInfo.mNumber = subscriptionInfo.getNumber();
+                simInfo.mCountryIso = subscriptionInfo.getCountryIso();
+                simInfo.mSubscriptionId = subscriptionInfo.getSubscriptionId();
                 try {
-                    if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
-                        //TODO
-                    }
-                    activeSubscriptionInfoList = mSubscriptionManager.getActiveSubscriptionInfoList();
-                } catch (Exception ignored) {
+                    simInfo.mImei = getReflexMethodWithId(context, "getDeviceId", String.valueOf(simInfo.mSimSlotIndex));
+                    simInfo.mImsi = getReflexMethodWithId(context, "getSubscriberId", String.valueOf(subscriptionInfo.getSubscriptionId()));
+                } catch (MethodNotFoundException ignored) {
                 }
-            }
-            if (activeSubscriptionInfoList != null && activeSubscriptionInfoList.size() > 0) {
-                //1.1.1 有使用的卡，就遍历所有卡
-                for (SubscriptionInfo subscriptionInfo : activeSubscriptionInfoList) {
-                    SimInfo simInfo = new SimInfo();
-                    simInfo.mCarrierName = subscriptionInfo.getCarrierName();
-                    simInfo.mIccId = subscriptionInfo.getIccId();
-                    simInfo.mSimSlotIndex = subscriptionInfo.getSimSlotIndex();
-                    simInfo.mNumber = subscriptionInfo.getNumber();
-                    simInfo.mCountryIso = subscriptionInfo.getCountryIso();
-                    simInfo.mSubscriptionId = subscriptionInfo.getSubscriptionId();
-                    try {
-                        simInfo.mImei = getReflexMethodWithId(context, "getDeviceId", String.valueOf(simInfo.mSimSlotIndex));
-                        simInfo.mImsi = getReflexMethodWithId(context, "getSubscriberId", String.valueOf(subscriptionInfo.getSubscriptionId()));
-                    } catch (MethodNotFoundException ignored) {
-                    }
-                    Log.d(TAG, String.valueOf(simInfo));
-                    infos.add(simInfo);
-                }
-            }
-        } else {
-            Log.d(TAG, "2.版本低于5.1的系统，首先调用数据库，看能不能访问到");
-            //2.版本低于5.1的系统，首先调用数据库，看能不能访问到
-            Uri uri = Uri.parse("content://telephony/siminfo"); //访问raw_contacts表
-            ContentResolver resolver = context.getContentResolver();
-            Cursor cursor = resolver.query(uri, new String[]{"_id", "icc_id", "sim_id", "display_name", "carrier_name", "name_source", "color", "number", "display_number_format", "data_roaming", "mcc", "mnc"}, null, null, null);
-            if (cursor != null && cursor.moveToFirst()) {
-                do {
-                    SimInfo simInfo = new SimInfo();
-                    simInfo.mCarrierName = cursor.getString(cursor.getColumnIndex("carrier_name"));
-                    simInfo.mIccId = cursor.getString(cursor.getColumnIndex("icc_id"));
-                    simInfo.mSimSlotIndex = cursor.getInt(cursor.getColumnIndex("sim_id"));
-                    simInfo.mNumber = cursor.getString(cursor.getColumnIndex("number"));
-                    simInfo.mCountryIso = cursor.getString(cursor.getColumnIndex("mcc"));
-                    String id = cursor.getString(cursor.getColumnIndex("_id"));
-
-                    try {
-                        simInfo.mImei = getReflexMethodWithId(context, "getDeviceId", String.valueOf(simInfo.mSimSlotIndex));
-                        simInfo.mImsi = getReflexMethodWithId(context, "getSubscriberId", String.valueOf(id));
-                    } catch (MethodNotFoundException ignored) {
-                    }
-                    Log.d(TAG, String.valueOf(simInfo));
-                    infos.add(simInfo);
-                } while (cursor.moveToNext());
-                cursor.close();
+                Log.d(TAG, String.valueOf(simInfo));
+                infos.add(simInfo);
             }
         }
 
@@ -540,12 +488,14 @@ public class PhoneUtils {
         boolean permission_send_sms = (PackageManager.PERMISSION_GRANTED == pm.checkPermission("android.permission.SEND_SMS", that.getPackageName()));
         boolean permission_read_phone_state = (PackageManager.PERMISSION_GRANTED == pm.checkPermission("android.permission.READ_PHONE_STATE", that.getPackageName()));
         boolean permission_read_phone_numbers = (PackageManager.PERMISSION_GRANTED == pm.checkPermission("android.permission.READ_PHONE_NUMBERS", that.getPackageName()));
-        boolean permission_battery_stats = (PackageManager.PERMISSION_GRANTED == pm.checkPermission("android.permission.BATTERY_STATS", that.getPackageName()));
+        boolean permission_read_call_log = (PackageManager.PERMISSION_GRANTED == pm.checkPermission("android.permission.READ_CALL_LOG", that.getPackageName()));
+        boolean permission_read_contacts = (PackageManager.PERMISSION_GRANTED == pm.checkPermission("android.permission.READ_CONTACTS", that.getPackageName()));
 
         if (!(permission_internet && permission_receive_boot && permission_foreground_service &&
                 permission_read_external_storage && permission_write_external_storage &&
                 permission_receive_sms && permission_read_sms && permission_send_sms &&
-                permission_read_phone_state && permission_read_phone_numbers && permission_battery_stats)) {
+                permission_read_call_log && permission_read_contacts &&
+                permission_read_phone_state && permission_read_phone_numbers)) {
             ActivityCompat.requestPermissions((Activity) that, new String[]{
                     Manifest.permission.INTERNET,
                     Manifest.permission.RECEIVE_BOOT_COMPLETED,
@@ -555,9 +505,10 @@ public class PhoneUtils {
                     Manifest.permission.READ_SMS,
                     Manifest.permission.SEND_SMS,
                     Manifest.permission.READ_PHONE_STATE,
+                    Manifest.permission.READ_CALL_LOG,
+                    Manifest.permission.READ_CONTACTS,
                     Manifest.permission.READ_PHONE_NUMBERS,
                     Manifest.permission.FOREGROUND_SERVICE,
-                    Manifest.permission.BATTERY_STATS,
             }, 0x01);
         }
     }

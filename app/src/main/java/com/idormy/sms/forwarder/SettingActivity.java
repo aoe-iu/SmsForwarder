@@ -9,10 +9,12 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Switch;
+import android.widget.Toast;
+
+import com.idormy.sms.forwarder.utils.KeepAliveUtils;
+import com.idormy.sms.forwarder.utils.SettingUtil;
 
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.idormy.sms.forwarder.utils.SettingUtil;
 
 
 public class SettingActivity extends AppCompatActivity {
@@ -26,6 +28,12 @@ public class SettingActivity extends AppCompatActivity {
 
         Switch switch_add_extra = (Switch) findViewById(R.id.switch_add_extra);
         switchAddExtra(switch_add_extra);
+
+        Switch switch_add_device_name = (Switch) findViewById(R.id.switch_add_device_name);
+        switchAddDeviceName(switch_add_device_name);
+
+        Switch switch_enable_phone = (Switch) findViewById(R.id.switch_enable_phone);
+        switchEnablePhone(switch_enable_phone);
 
         EditText et_add_extra_device_mark = (EditText) findViewById(R.id.et_add_extra_device_mark);
         editAddExtraDeviceMark(et_add_extra_device_mark);
@@ -47,14 +55,28 @@ public class SettingActivity extends AppCompatActivity {
     private void switchAddExtra(Switch switch_add_extra) {
         switch_add_extra.setChecked(SettingUtil.getSwitchAddExtra());
 
-        switch_add_extra.setOnCheckedChangeListener(new Switch.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                SettingUtil.switchAddExtra(isChecked);
-                Log.d(TAG, "onCheckedChanged:" + isChecked);
-            }
+        switch_add_extra.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            SettingUtil.switchAddExtra(isChecked);
+            Log.d(TAG, "onCheckedChanged:" + isChecked);
         });
     }
+
+    private void switchAddDeviceName(Switch switch_add_device_name) {
+        switch_add_device_name.setChecked(SettingUtil.getSwitchAddDeviceName());
+
+        switch_add_device_name.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            SettingUtil.switchAddDeviceName(isChecked);
+        });
+    }
+
+    private void switchEnablePhone(Switch switch_enable_phone) {
+        switch_enable_phone.setChecked(SettingUtil.getSwitchEnablePhone());
+
+        switch_enable_phone.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            SettingUtil.switchEnablePhone(isChecked);
+        });
+    }
+
 
     //设置转发附加信息devicemark
     private void editAddExtraDeviceMark(final EditText et_add_extra_device_mark) {
@@ -223,4 +245,11 @@ public class SettingActivity extends AppCompatActivity {
 
     }
 
+    public void batterySetting(View view) {
+        if (KeepAliveUtils.isIgnoreBatteryOptimization(this)) {
+            Toast.makeText(this,R.string.isIgnored,Toast.LENGTH_SHORT).show();
+        } else {
+            KeepAliveUtils.ignoreBatteryOptimization(this);
+        }
+    }
 }

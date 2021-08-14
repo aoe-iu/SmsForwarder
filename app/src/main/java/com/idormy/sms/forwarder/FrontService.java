@@ -10,9 +10,9 @@ import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 
-import androidx.annotation.Nullable;
+import com.idormy.sms.forwarder.utils.PhoneUtils;
 
-import com.idormy.sms.forwarder.utils.OSUtils;
+import androidx.annotation.Nullable;
 
 
 public class FrontService extends Service {
@@ -26,12 +26,12 @@ public class FrontService extends Service {
         Log.i(TAG, "onCreate");
         Notification.Builder builder = new Notification.Builder(this);
         builder.setSmallIcon(R.drawable.ic_sms_forwarder);
-        OSUtils.ROM_TYPE romType = OSUtils.getRomType();
+//        OSUtils.ROM_TYPE romType = OSUtils.getRomType();
         //Log.d(TAG, "onCreate: " + romType);
-        if (romType == OSUtils.ROM_TYPE.MIUI_ROM) {
-            builder.setContentTitle("短信转发器");
-        }
-        builder.setContentText("根据规则转发到钉钉/微信/邮箱/bark/Server酱/Telegram/webhook等");
+//        if (romType == OSUtils.ROM_TYPE.MIUI_ROM) {
+        builder.setContentTitle(getString(R.string.app_name));
+//        }
+        builder.setContentText(getString(R.string.notification_content));
         Intent intent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity
                 (this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -51,14 +51,15 @@ public class FrontService extends Service {
         Notification notification = builder.build();
         startForeground(1, notification);
 
-        //检查权限是否获取
-        //PackageManager pm = getPackageManager();
-        //PhoneUtils.CheckPermission(pm, this);
-
         //Android8.1以下尝试启动主界面，以便动态获取权限
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1) {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
+        }
+        // 手机重启，未打开app时，主动获取SIM卡信息
+        if (MyApplication.SimInfoList.isEmpty()) {
+            PhoneUtils.init(this);
+            MyApplication.SimInfoList = PhoneUtils.getSimMultiInfo();
         }
     }
 

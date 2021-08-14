@@ -32,6 +32,28 @@ public class SettingUtil {
         return sp_setting.getBoolean(Define.SP_MSG_KEY_SWITCH_ADD_EXTRA, false);
     }
 
+    public static void switchAddDeviceName(Boolean switchAddDeviceName) {
+        Log.d(TAG, "switchAddDeviceName :" + switchAddDeviceName);
+        sp_setting.edit()
+                .putBoolean(Define.SP_MSG_KEY_STRING_ADD_EXTRA_DEVICE_NAME, switchAddDeviceName)
+                .apply();
+    }
+
+
+    public static boolean getSwitchAddDeviceName() {
+        return sp_setting.getBoolean(Define.SP_MSG_KEY_STRING_ADD_EXTRA_DEVICE_NAME, false);
+    }
+
+    public static void switchEnablePhone(Boolean enable) {
+        sp_setting.edit()
+                .putBoolean(Define.SP_MSG_KEY_STRING_ENABLE_PHONE, enable)
+                .apply();
+    }
+
+    public static boolean getSwitchEnablePhone() {
+        return sp_setting.getBoolean(Define.SP_MSG_KEY_STRING_ENABLE_PHONE, true);
+    }
+
     public static void switchSmsTemplate(Boolean switchSmsTemplate) {
         Log.d(TAG, "switchSmsTemplate :" + switchSmsTemplate);
         sp_setting.edit()

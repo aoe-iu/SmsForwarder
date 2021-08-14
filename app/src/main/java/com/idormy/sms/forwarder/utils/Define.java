@@ -5,6 +5,8 @@ public class Define {
     public static String SP_CONFIG_SWITCH_HELP_TIP = "forwarder_config_switch_help_tip";
 
     public static String SP_MSG_KEY_SWITCH_ADD_EXTRA = "tsms_msg_key_switch_add_extra";
+    public static String SP_MSG_KEY_STRING_ADD_EXTRA_DEVICE_NAME = "tsms_msg_key_switch_add_extra_device_name";
+    public static String SP_MSG_KEY_STRING_ENABLE_PHONE = "tsms_msg_key_switch_enable_phone";
     public static String SP_MSG_KEY_STRING_ADD_EXTRA_DEVICE_MARK = "tsms_msg_key_string_add_extra_device_mark";
     public static String SP_MSG_KEY_STRING_ADD_EXTRA_SIM1 = "tsms_msg_key_string_add_extra_sim1";
     public static String SP_MSG_KEY_STRING_ADD_EXTRA_SIM2 = "tsms_msg_key_string_add_extra_sim2";
