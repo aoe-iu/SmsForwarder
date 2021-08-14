@@ -1,5 +1,6 @@
 package com.idormy.sms.forwarder
 
+import androidx.test.InstrumentationRegistry.getTargetContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Assert.assertEquals
@@ -16,7 +17,7 @@ class ExampleInstrumentedTest {
     @Test
     fun useAppContext() {
         // Context of the app under test.
-        val appContext = InstrumentationRegistry.getTargetContext()
+        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         assertEquals("com.idormy.sms.forwarder", appContext.packageName)
     }
 }

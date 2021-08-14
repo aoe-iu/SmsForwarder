@@ -618,11 +618,14 @@ public class SenderActivity extends AppCompatActivity {
         final EditText editTextWebNotifyName = view1.findViewById(R.id.editTextWebNotifyName);
         if (senderModel != null) editTextWebNotifyName.setText(senderModel.getName());
         final EditText editTextWebNotifyWebServer = view1.findViewById(R.id.editTextWebNotifyWebServer);
-        if (webNotifySettingVo != null) editTextWebNotifyWebServer.setText(webNotifySettingVo.getWebServer());
+        if (webNotifySettingVo != null)
+            editTextWebNotifyWebServer.setText(webNotifySettingVo.getWebServer());
         final EditText editTextWebNotifySecret = view1.findViewById(R.id.editTextWebNotifySecret);
-        if (webNotifySettingVo != null) editTextWebNotifySecret.setText(webNotifySettingVo.getSecret());
+        if (webNotifySettingVo != null)
+            editTextWebNotifySecret.setText(webNotifySettingVo.getSecret());
         final RadioGroup radioGroupWebNotifyMethod = (RadioGroup) view1.findViewById(R.id.radioGroupWebNotifyMethod);
-        if (webNotifySettingVo != null) radioGroupWebNotifyMethod.check(webNotifySettingVo.getWebNotifyMethodCheckId());
+        if (webNotifySettingVo != null)
+            radioGroupWebNotifyMethod.check(webNotifySettingVo.getWebNotifyMethodCheckId());
 
         Button buttonbebnotifyok = view1.findViewById(R.id.buttonbebnotifyok);
         Button buttonbebnotifydel = view1.findViewById(R.id.buttonbebnotifydel);
@@ -782,6 +785,7 @@ public class SenderActivity extends AppCompatActivity {
         if (senderModel != null) {
             String jsonSettingStr = senderModel.getJsonSetting();
             if (jsonSettingStr != null) {
+                Log.d(TAG, "setQYWXApp: " + jsonSettingStr);
                 QYWXAppSettingVo = JSON.parseObject(jsonSettingStr, QYWXAppSettingVo.class);
             }
         }
@@ -846,6 +850,7 @@ public class SenderActivity extends AppCompatActivity {
                         editTextQYWXAppToUser.getText().toString(),
                         switchQYWXAppAtAll.isChecked());
                 newSenderModel.setJsonSetting(JSON.toJSONString(QYWXAppSettingVonew));
+                Log.d(TAG, "setQYWXApp: " + JSON.toJSONString(QYWXAppSettingVonew));
                 SenderUtil.addSender(newSenderModel);
                 initSenders();
                 adapter.add(senderModels);
@@ -1005,7 +1010,8 @@ public class SenderActivity extends AppCompatActivity {
         final EditText editTextSmsMobiles = view1.findViewById(R.id.editTextSmsMobiles);
         if (smsSettingVo != null) editTextSmsMobiles.setText(smsSettingVo.getMobiles());
         final Switch switchSmsOnlyNoNetwork = view1.findViewById(R.id.switchSmsOnlyNoNetwork);
-        if (smsSettingVo != null) switchSmsOnlyNoNetwork.setChecked(smsSettingVo.getOnlyNoNetwork());
+        if (smsSettingVo != null)
+            switchSmsOnlyNoNetwork.setChecked(smsSettingVo.getOnlyNoNetwork());
 
         Button buttonSmsOk = view1.findViewById(R.id.buttonSmsOk);
         Button buttonSmsDel = view1.findViewById(R.id.buttonSmsDel);

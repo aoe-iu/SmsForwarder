@@ -51,7 +51,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:inputType=""
-                android:text="" />
+                android:text="@string/wechat_id" />
         </LinearLayout>
 
         <LinearLayout
@@ -74,7 +74,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:inputType=""
-                android:text="" />
+                android:text="@string/Agent_ID" />
         </LinearLayout>
 
 
@@ -98,7 +98,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:inputType="textPassword"
-                android:text="" />
+                android:text="@string/App_Secret" />
         </LinearLayout>
 
         <LinearLayout
