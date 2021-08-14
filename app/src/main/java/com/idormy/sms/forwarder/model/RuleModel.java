@@ -30,25 +30,25 @@ public class RuleModel {
     public static final Map<String, String> SIM_SLOT_MAP = new HashMap<String, String>();
 
     static {
-        FILED_MAP.put("transpond_all", "全部转发");
-        FILED_MAP.put("phone_num", "手机号");
-        FILED_MAP.put("msg_content", "内容");
-        FILED_MAP.put("multi_match", "多重匹配");
+        FILED_MAP.put(FILED_TRANSPOND_ALL, "全部转发");
+        FILED_MAP.put(FILED_PHONE_NUM, "手机号");
+        FILED_MAP.put(FILED_MSG_CONTENT, "内容");
+        FILED_MAP.put(FILED_MULTI_MATCH, "多重匹配");
     }
 
     static {
-        CHECK_MAP.put("is", "是");
-        CHECK_MAP.put("contain", "包含");
-        CHECK_MAP.put("startwith", "开头是");
-        CHECK_MAP.put("endwith", "结尾是");
-        CHECK_MAP.put("notis", "不是");
-        CHECK_MAP.put("regex", "正则匹配");
+        CHECK_MAP.put(CHECK_IS, "是");
+        CHECK_MAP.put(CHECK_CONTAIN, "包含");
+        CHECK_MAP.put(CHECK_START_WITH, "开头是");
+        CHECK_MAP.put(CHECK_END_WITH, "结尾是");
+        CHECK_MAP.put(CHECK_NOT_IS, "不是");
+        CHECK_MAP.put(CHECK_REGEX, "正则匹配");
     }
 
     static {
-        SIM_SLOT_MAP.put("ALL", "全部");
-        SIM_SLOT_MAP.put("SIM1", "SIM1");
-        SIM_SLOT_MAP.put("SIM2", "SIM2");
+        SIM_SLOT_MAP.put(CHECK_SIM_SLOT_ALL, "全部");
+        SIM_SLOT_MAP.put(CHECK_SIM_SLOT_1, "SIM1");
+        SIM_SLOT_MAP.put(CHECK_SIM_SLOT_2, "SIM2");
     }
 
     private String TAG = "RuleModel";

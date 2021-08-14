@@ -1,13 +1,10 @@
 package com.idormy.sms.forwarder;
 
-import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -84,46 +81,33 @@ public class RuleActivity extends AppCompatActivity {
 
         // 为ListView注册一个监听器，当用户点击了ListView中的任何一个子项时，就会回调onItemClick()方法
         // 在这个方法中可以通过position参数判断出用户点击的是那一个子项
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                RuleModel ruleModel = ruleModels.get(position);
-                Log.d(TAG, "onItemClick: " + ruleModel);
-                setRule(ruleModel);
-            }
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+            RuleModel ruleModel = ruleModels.get(position);
+            Log.d(TAG, "onItemClick: " + ruleModel);
+            setRule(ruleModel);
         });
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-                //定义AlertDialog.Builder对象，当长按列表项的时候弹出确认删除对话框
-                AlertDialog.Builder builder = new AlertDialog.Builder(RuleActivity.this);
+        listView.setOnItemLongClickListener((parent, view, position, id) -> {
+            //定义AlertDialog.Builder对象，当长按列表项的时候弹出确认删除对话框
+            AlertDialog.Builder builder = new AlertDialog.Builder(RuleActivity.this);
 
-                builder.setMessage("确定删除?");
-                builder.setTitle("提示");
+            builder.setMessage("确定删除?");
+            builder.setTitle("提示");
 
-                //添加AlertDialog.Builder对象的setPositiveButton()方法
-                builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        RuleUtil.delRule(ruleModels.get(position).getId());
-                        initRules();
-                        adapter.del(ruleModels);
-                        Toast.makeText(getBaseContext(), "删除列表项", Toast.LENGTH_SHORT).show();
-                    }
-                });
+            //添加AlertDialog.Builder对象的setPositiveButton()方法
+            builder.setPositiveButton("确定", (dialog, which) -> {
+                RuleUtil.delRule(ruleModels.get(position).getId());
+                initRules();
+                adapter.del(ruleModels);
+                Toast.makeText(getBaseContext(), "删除列表项", Toast.LENGTH_SHORT).show();
+            });
 
-                //添加AlertDialog.Builder对象的setNegativeButton()方法
-                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            //添加AlertDialog.Builder对象的setNegativeButton()方法
+            builder.setNegativeButton("取消", (dialog, which) -> {
 
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
+            });
 
-                    }
-                });
-
-                builder.create().show();
-                return true;
-            }
+            builder.create().show();
+            return true;
         });
     }
 
@@ -169,12 +153,9 @@ public class RuleActivity extends AppCompatActivity {
             }
         }
         final Button btSetRuleSender = (Button) view1.findViewById(R.id.btSetRuleSender);
-        btSetRuleSender.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //Toast.makeText(RuleActivity.this, "selectSender", Toast.LENGTH_LONG).show();
-                selectSender(ruleSenderTv);
-            }
+        btSetRuleSender.setOnClickListener(view -> {
+            //Toast.makeText(RuleActivity.this, "selectSender", Toast.LENGTH_LONG).show();
+            selectSender(ruleSenderTv);
         });
 
         final EditText editTextRuleValue = view1.findViewById(R.id.editTextRuleValue);
@@ -271,50 +252,39 @@ public class RuleActivity extends AppCompatActivity {
     private void refreshSelectRadioGroupRuleFiled(RadioGroup radioGroupRuleFiled, final RadioGroup radioGroupRuleCheck, final RadioGroup radioGroupRuleCheck2, final EditText editTextRuleValue, final TextView tv_mu_rule_tips, final LinearLayout matchTypeLayout, final LinearLayout matchValueLayout) {
         refreshSelectRadioGroupRuleFiledAction(radioGroupRuleFiled.getCheckedRadioButtonId(), radioGroupRuleCheck, radioGroupRuleCheck2, editTextRuleValue, tv_mu_rule_tips, matchTypeLayout, matchValueLayout);
 
-        radioGroupRuleCheck.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @SuppressLint("ResourceType")
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                Log.d(TAG, String.valueOf(group));
-                Log.d(TAG, String.valueOf(checkedId));
-                if (group != null && checkedId > 0) {
-                    if (group == radioGroupRuleCheck) {
-                        radioGroupRuleCheck2.clearCheck();
-                    } else if (group == radioGroupRuleCheck2) {
-                        radioGroupRuleCheck.clearCheck();
-                    }
-                    group.check(checkedId);
-                }
-            }
-        });
-        radioGroupRuleCheck2.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @SuppressLint("ResourceType")
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                Log.d(TAG, String.valueOf(group));
-                Log.d(TAG, String.valueOf(checkedId));
-                if (group != null && checkedId > 0) {
-                    if (group == radioGroupRuleCheck) {
-                        radioGroupRuleCheck2.clearCheck();
-                    } else if (group == radioGroupRuleCheck2) {
-                        radioGroupRuleCheck.clearCheck();
-                    }
-                    group.check(checkedId);
-                }
-            }
-        });
-        radioGroupRuleFiled.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                Log.d(TAG, String.valueOf(group));
-                Log.d(TAG, String.valueOf(checkedId));
+        radioGroupRuleCheck.setOnCheckedChangeListener((group, checkedId) -> {
+            Log.d(TAG, String.valueOf(group));
+            Log.d(TAG, String.valueOf(checkedId));
+            if (group != null && checkedId > 0) {
                 if (group == radioGroupRuleCheck) {
                     radioGroupRuleCheck2.clearCheck();
                 } else if (group == radioGroupRuleCheck2) {
                     radioGroupRuleCheck.clearCheck();
                 }
-                refreshSelectRadioGroupRuleFiledAction(checkedId, radioGroupRuleCheck, radioGroupRuleCheck2, editTextRuleValue, tv_mu_rule_tips, matchTypeLayout, matchValueLayout);
+                group.check(checkedId);
             }
+        });
+        radioGroupRuleCheck2.setOnCheckedChangeListener((group, checkedId) -> {
+            Log.d(TAG, String.valueOf(group));
+            Log.d(TAG, String.valueOf(checkedId));
+            if (group != null && checkedId > 0) {
+                if (group == radioGroupRuleCheck) {
+                    radioGroupRuleCheck2.clearCheck();
+                } else if (group == radioGroupRuleCheck2) {
+                    radioGroupRuleCheck.clearCheck();
+                }
+                group.check(checkedId);
+            }
+        });
+        radioGroupRuleFiled.setOnCheckedChangeListener((group, checkedId) -> {
+            Log.d(TAG, String.valueOf(group));
+            Log.d(TAG, String.valueOf(checkedId));
+            if (group == radioGroupRuleCheck) {
+                radioGroupRuleCheck2.clearCheck();
+            } else if (group == radioGroupRuleCheck2) {
+                radioGroupRuleCheck.clearCheck();
+            }
+            refreshSelectRadioGroupRuleFiledAction(checkedId, radioGroupRuleCheck, radioGroupRuleCheck2, editTextRuleValue, tv_mu_rule_tips, matchTypeLayout, matchValueLayout);
         });
     }
 
@@ -370,13 +340,11 @@ public class RuleActivity extends AppCompatActivity {
         }
         AlertDialog.Builder builder = new AlertDialog.Builder(RuleActivity.this);
         builder.setTitle("选择发送方");
-        builder.setItems(senderNames, new DialogInterface.OnClickListener() {//添加列表
-            @Override
-            public void onClick(DialogInterface dialogInterface, int which) {
-                Toast.makeText(RuleActivity.this, senderNames[which], Toast.LENGTH_LONG).show();
-                showTv.setText(senderNames[which]);
-                showTv.setTag(senderModels.get(which).getId());
-            }
+        //添加列表
+        builder.setItems(senderNames, (dialogInterface, which) -> {
+            Toast.makeText(RuleActivity.this, senderNames[which], Toast.LENGTH_LONG).show();
+            showTv.setText(senderNames[which]);
+            showTv.setTag(senderModels.get(which).getId());
         });
         builder.show();
     }
@@ -391,26 +359,23 @@ public class RuleActivity extends AppCompatActivity {
         ad1.setTitle("测试规则");
         ad1.setIcon(android.R.drawable.ic_dialog_email);
         ad1.setView(view);
-        buttonruletest.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        buttonruletest.setOnClickListener(v -> {
 
-                Log.i("editTextTestPhone", editTextTestPhone.getText().toString());
-                Log.i("editTextTestMsgContent", editTextTestMsgContent.getText().toString());
+            Log.i("editTextTestPhone", editTextTestPhone.getText().toString());
+            Log.i("editTextTestMsgContent", editTextTestMsgContent.getText().toString());
 
-                try {
-                    String simSlot = RuleModel.getRuleSimSlotFromCheckId(radioGroupTestSimSlot.getCheckedRadioButtonId());
-                    String simInfo = "";
-                    if (simSlot.equals("SIM2")) {
-                        simInfo = simSlot + "_" + SettingUtil.getAddExtraSim2();
-                    } else {
-                        simInfo = simSlot + "_" + SettingUtil.getAddExtraSim1();
-                    }
-                    SmsVo testSmsVo = new SmsVo(editTextTestPhone.getText().toString(), editTextTestMsgContent.getText().toString(), new Date(), simInfo);
-                    SendUtil.sendMsgByRuleModelSenderId(handler, ruleModel, testSmsVo, senderId);
-                } catch (Exception e) {
-                    Toast.makeText(RuleActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+            try {
+                String simSlot = RuleModel.getRuleSimSlotFromCheckId(radioGroupTestSimSlot.getCheckedRadioButtonId());
+                String simInfo = "";
+                if (simSlot.equals("SIM2")) {
+                    simInfo = simSlot + "_" + SettingUtil.getAddExtraSim2();
+                } else {
+                    simInfo = simSlot + "_" + SettingUtil.getAddExtraSim1();
                 }
+                SmsVo testSmsVo = new SmsVo(editTextTestPhone.getText().toString(), editTextTestMsgContent.getText().toString(), new Date(), simInfo);
+                SendUtil.sendMsgByRuleModelSenderId(handler, ruleModel, testSmsVo, senderId);
+            } catch (Exception e) {
+                Toast.makeText(RuleActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
         ad1.show();// 显示对话框

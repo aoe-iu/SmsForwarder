@@ -26,4 +26,7 @@
     <string name="calling">来电</string>
     <string name="unsupport">您的手机不支持此设置</string>
     <string name="isIgnored">已设置成功！</string>
+    <string name="wechat_id" />
+    <string name="Agent_ID" />
+    <string name="App_Secret" />
 </resources>
